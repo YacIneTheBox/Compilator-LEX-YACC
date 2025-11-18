@@ -58,9 +58,12 @@ extern int yydebug;
     PLUS = 259,                    /* PLUS  */
     MUL = 260,                     /* MUL  */
     MINUS = 261,                   /* MINUS  */
-    LPAREN = 262,                  /* LPAREN  */
+    DIV = 262,                     /* DIV  */
     RPAREN = 263,                  /* RPAREN  */
-    EOL = 264                      /* EOL  */
+    LPAREN = 264,                  /* LPAREN  */
+    EOL = 265,                     /* EOL  */
+    SOMME = 266,                   /* SOMME  */
+    COMMA = 267                    /* COMMA  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -73,9 +76,12 @@ extern int yydebug;
 #define PLUS 259
 #define MUL 260
 #define MINUS 261
-#define LPAREN 262
+#define DIV 262
 #define RPAREN 263
-#define EOL 264
+#define LPAREN 264
+#define EOL 265
+#define SOMME 266
+#define COMMA 267
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED

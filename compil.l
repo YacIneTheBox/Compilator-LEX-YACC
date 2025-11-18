@@ -9,8 +9,11 @@
 "+"	{return PLUS;}
 "-"	{return MINUS;}
 "*"	{return MUL;}
+"/" {return DIV;}
 "("	{return LPAREN;}
 ")"	{return RPAREN;}
+"somme" {return SOMME;}
+"," {return COMMA;}
 .	{return yytext[0];}
 
 %%

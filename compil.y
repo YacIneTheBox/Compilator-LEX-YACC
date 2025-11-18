@@ -7,44 +7,59 @@ void yyerror(char *s);
 %}
 
 %token NUMBER
-%token PLUS MUL MINUS
-%token LPAREN RPAREN
+%token PLUS MUL MINUS DIV
+%token RPAREN LPAREN
 %token EOL
+%token SOMME COMMA
 
 %%
+
 input:
-     | input line
+    /* vide */
+  | input line
 ;
 
 line:
-    expr EOL {printf("Expression Correct!\n");}
-    | EOL
+    expr EOL   { printf("= %d\n", $1); }
+  | EOL
 ;
 
 expr:
-	expr PLUS term
-    |	expr MINUS term
-    |	term
+    expr PLUS term   { $$ = $1 + $3; }
+  |  expr MINUS term  { $$ = $1 - $3; }
+  | term
 ;
 
 term:
-    term MUL factor
-    | factor
+    term MUL factor   { $$ = $1 * $3; }
+  |  term DIV factor   { $$ = $1 / $3; }
+  | factor
 ;
 
 factor:
-      NUMBER
-      |	LPAREN expr RPAREN
+    NUMBER
+    | LPAREN expr RPAREN { $$ = $2;}
+    | function_call
+;
+
+function_call:
+    SOMME LPAREN argument_list RPAREN { $$ = $3; }
+;
+
+argument_list:
+    expr  { $$ = $1; }
+    | argument_list COMMA expr { $$ = $1 + $3; }
 ;
 
 %%
 
-void yyerror(char *s){
-    printf("Expression Fausse !\n");
+void yyerror(char *s) {
+    printf("Erreur: %s\n", s);
 }
 
-int main(){
-    printf("Enter Something : \n");
+int main() {
+    printf("Tapez une expression:\n");
     yyparse();
     return 0;
 }
+
