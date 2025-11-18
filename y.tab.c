@@ -574,8 +574,8 @@ static const yytype_int8 yytranslate[] =
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    17,    17,    19,    23,    24,    28,    29,    30,    34,
-      35,    36,    40,    41,    42,    46,    50,    51
+       0,    17,    17,    19,    23,    24,    28,    29,    30,    33,
+      34,    35,    39,    40,    41,    45,    49,    50
 };
 #endif
 
@@ -1149,54 +1149,54 @@ yyreduce:
     {
   case 4: /* line: expr EOL  */
 #line 23 "compil.y"
-               { printf("= %d\n", yyvsp[-1]); }
+                { printf("= %d\n", yyvsp[-1]); }
 #line 1154 "y.tab.c"
     break;
 
   case 6: /* expr: expr PLUS term  */
 #line 28 "compil.y"
-                     { yyval = yyvsp[-2] + yyvsp[0]; }
+                      { yyval = yyvsp[-2] + yyvsp[0]; }
 #line 1160 "y.tab.c"
     break;
 
   case 7: /* expr: expr MINUS term  */
 #line 29 "compil.y"
-                      { yyval = yyvsp[-2] - yyvsp[0]; }
+                       { yyval = yyvsp[-2] - yyvsp[0]; }
 #line 1166 "y.tab.c"
     break;
 
   case 9: /* term: term MUL factor  */
-#line 34 "compil.y"
-                      { yyval = yyvsp[-2] * yyvsp[0]; }
+#line 33 "compil.y"
+                       { yyval = yyvsp[-2] * yyvsp[0]; }
 #line 1172 "y.tab.c"
     break;
 
   case 10: /* term: term DIV factor  */
-#line 35 "compil.y"
-                       { yyval = yyvsp[-2] / yyvsp[0]; }
+#line 34 "compil.y"
+                        { yyval = yyvsp[-2] / yyvsp[0]; }
 #line 1178 "y.tab.c"
     break;
 
   case 13: /* factor: LPAREN expr RPAREN  */
-#line 41 "compil.y"
-                         { yyval = yyvsp[-1];}
+#line 40 "compil.y"
+                           { yyval = yyvsp[-1];}
 #line 1184 "y.tab.c"
     break;
 
   case 15: /* function_call: SOMME LPAREN argument_list RPAREN  */
-#line 46 "compil.y"
+#line 45 "compil.y"
                                       { yyval = yyvsp[-1]; }
 #line 1190 "y.tab.c"
     break;
 
   case 16: /* argument_list: expr  */
-#line 50 "compil.y"
+#line 49 "compil.y"
           { yyval = yyvsp[0]; }
 #line 1196 "y.tab.c"
     break;
 
   case 17: /* argument_list: argument_list COMMA expr  */
-#line 51 "compil.y"
+#line 50 "compil.y"
                                { yyval = yyvsp[-2] + yyvsp[0]; }
 #line 1202 "y.tab.c"
     break;
@@ -1395,7 +1395,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 54 "compil.y"
+#line 53 "compil.y"
 
 
 void yyerror(char *s) {

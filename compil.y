@@ -15,31 +15,30 @@ void yyerror(char *s);
 %%
 
 input:
-    /* vide */
-  | input line
-;
+     /* vide */
+   | input line
+ ;
 
-line:
-    expr EOL   { printf("= %d\n", $1); }
-  | EOL
-;
+ line:
+     expr EOL   { printf("= %d\n", $1); }
+   | EOL
+ ;
 
-expr:
-    expr PLUS term   { $$ = $1 + $3; }
-  |  expr MINUS term  { $$ = $1 - $3; }
-  | term
-;
+ expr:
+     expr PLUS term   { $$ = $1 + $3; }
+   |  expr MINUS term  { $$ = $1 - $3; }
+   | term
+ ;
+ term:
+     term MUL factor   { $$ = $1 * $3; }
+   |  term DIV factor   { $$ = $1 / $3; }
+   | factor
+ ;
 
-term:
-    term MUL factor   { $$ = $1 * $3; }
-  |  term DIV factor   { $$ = $1 / $3; }
-  | factor
-;
-
-factor:
-    NUMBER
-    | LPAREN expr RPAREN { $$ = $2;}
-    | function_call
+ factor:
+     NUMBER
+      | LPAREN expr RPAREN { $$ = $2;}
+     | function_call
 ;
 
 function_call:
