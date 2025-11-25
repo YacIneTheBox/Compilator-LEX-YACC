@@ -65,8 +65,9 @@ extern int yydebug;
     MOYENNE = 266,                 /* MOYENNE  */
     PRODUIT = 267,                 /* PRODUIT  */
     VARIANCE = 268,                /* VARIANCE  */
-    COMMA = 269,                   /* COMMA  */
-    EOL = 270                      /* EOL  */
+    ECART_TYPE = 269,              /* ECART_TYPE  */
+    COMMA = 270,                   /* COMMA  */
+    EOL = 271                      /* EOL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -86,19 +87,21 @@ extern int yydebug;
 #define MOYENNE 266
 #define PRODUIT 267
 #define VARIANCE 268
-#define COMMA 269
-#define EOL 270
+#define ECART_TYPE 269
+#define COMMA 270
+#define EOL 271
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "compil.y"
+#line 24 "compil.y"
 
     double val;       // pour expr, term, factor
     AvgData avg;   // pour moyenne
+    VarianceData var;
 
-#line 102 "y.tab.h"
+#line 105 "y.tab.h"
 
 };
 typedef union YYSTYPE YYSTYPE;

@@ -79,11 +79,17 @@ typedef struct {
     int count;
 } AvgData;
 
+typedef struct {
+    double sum;
+    double sum_of_squares;
+    int count;
+}VarianceData;
+
 int yylex();
 void yyerror(char *s);
 
 
-#line 87 "y.tab.c"
+#line 93 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -138,8 +144,9 @@ extern int yydebug;
     MOYENNE = 266,                 /* MOYENNE  */
     PRODUIT = 267,                 /* PRODUIT  */
     VARIANCE = 268,                /* VARIANCE  */
-    COMMA = 269,                   /* COMMA  */
-    EOL = 270                      /* EOL  */
+    ECART_TYPE = 269,              /* ECART_TYPE  */
+    COMMA = 270,                   /* COMMA  */
+    EOL = 271                      /* EOL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -159,19 +166,21 @@ extern int yydebug;
 #define MOYENNE 266
 #define PRODUIT 267
 #define VARIANCE 268
-#define COMMA 269
-#define EOL 270
+#define ECART_TYPE 269
+#define COMMA 270
+#define EOL 271
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
 union YYSTYPE
 {
-#line 18 "compil.y"
+#line 24 "compil.y"
 
     double val;       // pour expr, term, factor
     AvgData avg;   // pour moyenne
+    VarianceData var;
 
-#line 175 "y.tab.c"
+#line 184 "y.tab.c"
 
 };
 typedef union YYSTYPE YYSTYPE;
@@ -205,20 +214,24 @@ enum yysymbol_kind_t
   YYSYMBOL_MOYENNE = 11,                   /* MOYENNE  */
   YYSYMBOL_PRODUIT = 12,                   /* PRODUIT  */
   YYSYMBOL_VARIANCE = 13,                  /* VARIANCE  */
-  YYSYMBOL_COMMA = 14,                     /* COMMA  */
-  YYSYMBOL_EOL = 15,                       /* EOL  */
-  YYSYMBOL_YYACCEPT = 16,                  /* $accept  */
-  YYSYMBOL_input = 17,                     /* input  */
-  YYSYMBOL_line = 18,                      /* line  */
-  YYSYMBOL_expr = 19,                      /* expr  */
-  YYSYMBOL_term = 20,                      /* term  */
-  YYSYMBOL_factor = 21,                    /* factor  */
-  YYSYMBOL_function_somme = 22,            /* function_somme  */
-  YYSYMBOL_argument_list_sum = 23,         /* argument_list_sum  */
-  YYSYMBOL_function_moyenne = 24,          /* function_moyenne  */
-  YYSYMBOL_argument_list_avg = 25,         /* argument_list_avg  */
-  YYSYMBOL_function_produit = 26,          /* function_produit  */
-  YYSYMBOL_argument_list_prod = 27         /* argument_list_prod  */
+  YYSYMBOL_ECART_TYPE = 14,                /* ECART_TYPE  */
+  YYSYMBOL_COMMA = 15,                     /* COMMA  */
+  YYSYMBOL_EOL = 16,                       /* EOL  */
+  YYSYMBOL_YYACCEPT = 17,                  /* $accept  */
+  YYSYMBOL_input = 18,                     /* input  */
+  YYSYMBOL_line = 19,                      /* line  */
+  YYSYMBOL_expr = 20,                      /* expr  */
+  YYSYMBOL_term = 21,                      /* term  */
+  YYSYMBOL_factor = 22,                    /* factor  */
+  YYSYMBOL_function_somme = 23,            /* function_somme  */
+  YYSYMBOL_argument_list_sum = 24,         /* argument_list_sum  */
+  YYSYMBOL_function_moyenne = 25,          /* function_moyenne  */
+  YYSYMBOL_argument_list_avg = 26,         /* argument_list_avg  */
+  YYSYMBOL_function_produit = 27,          /* function_produit  */
+  YYSYMBOL_argument_list_prod = 28,        /* argument_list_prod  */
+  YYSYMBOL_function_variance = 29,         /* function_variance  */
+  YYSYMBOL_argument_list_var = 30,         /* argument_list_var  */
+  YYSYMBOL_function_ecart_type = 31        /* function_ecart_type  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -546,19 +559,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   41
+#define YYLAST   57
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  16
+#define YYNTOKENS  17
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  12
+#define YYNNTS  15
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  24
+#define YYNRULES  31
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  43
+#define YYNSTATES  58
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   270
+#define YYMAXUTOK   271
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -599,16 +612,17 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
        5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
-      15
+      15,    16
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
-static const yytype_int8 yyrline[] =
+static const yytype_uint8 yyrline[] =
 {
-       0,    41,    41,    43,    47,    48,    54,    55,    56,    60,
-      61,    65,    66,    67,    68,    69,    75,    79,    80,    86,
-      99,   104,   113,   117,   118
+       0,    50,    50,    52,    56,    57,    63,    64,    65,    69,
+      70,    71,    75,    76,    77,    78,    79,    80,    81,    87,
+      91,    92,    98,   111,   116,   125,   129,   130,   136,   149,
+     155,   167
 };
 #endif
 
@@ -626,9 +640,11 @@ static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "NUMBER", "PLUS",
   "MINUS", "MUL", "DIV", "LPAREN", "RPAREN", "SOMME", "MOYENNE", "PRODUIT",
-  "VARIANCE", "COMMA", "EOL", "$accept", "input", "line", "expr", "term",
-  "factor", "function_somme", "argument_list_sum", "function_moyenne",
-  "argument_list_avg", "function_produit", "argument_list_prod", YY_NULLPTR
+  "VARIANCE", "ECART_TYPE", "COMMA", "EOL", "$accept", "input", "line",
+  "expr", "term", "factor", "function_somme", "argument_list_sum",
+  "function_moyenne", "argument_list_avg", "function_produit",
+  "argument_list_prod", "function_variance", "argument_list_var",
+  "function_ecart_type", YY_NULLPTR
 };
 
 static const char *
@@ -638,7 +654,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-6)
+#define YYPACT_NINF (-16)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -652,11 +668,12 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -6,     8,    -6,    -6,    14,    -5,    13,    22,    -6,    -6,
-      -3,     4,    -6,    -6,    -6,    -6,     0,    14,    14,    14,
-      14,    14,    -6,    14,    -6,     2,    18,     2,    20,     2,
-      27,     4,     4,    -6,    -6,    14,    -6,    14,    -6,    14,
-       2,     2,     2
+     -16,     1,   -16,   -16,    16,    -3,     8,    15,    17,    40,
+     -16,   -16,     2,    29,   -16,   -16,   -16,   -16,   -16,   -16,
+      37,    16,    16,    16,    16,    16,    16,    16,   -16,    16,
+      16,   -16,    39,    -7,    39,    22,    39,    23,    39,    24,
+      25,    29,    29,   -16,   -16,   -16,    16,   -16,    16,   -16,
+      16,   -16,    16,   -16,    39,    39,    39,    39
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -664,25 +681,26 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     1,    11,     0,     0,     0,     0,     5,     3,
-       0,     8,    10,    13,    14,    15,     0,     0,     0,     0,
-       0,     0,     4,     0,    12,    17,     0,    20,     0,    23,
-       0,     6,     7,     9,    16,     0,    19,     0,    22,     0,
-      18,    21,    24
+       2,     0,     1,    12,     0,     0,     0,     0,     0,     0,
+       5,     3,     0,     8,    11,    14,    15,    16,    17,    18,
+       0,     0,     0,     0,     0,     0,     0,     0,     4,     0,
+       0,    13,    20,     0,    23,     0,    26,     0,    29,     0,
+       0,     6,     7,     9,    10,    19,     0,    22,     0,    25,
+       0,    28,     0,    31,    21,    24,    27,    30
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -6,    -6,    -6,    -4,    17,     5,    -6,    -6,    -6,    -6,
-      -6,    -6
+     -16,   -16,   -16,    -1,    26,    27,   -16,   -16,   -16,   -16,
+     -16,   -16,   -16,   -15,   -16
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1,     9,    10,    11,    12,    13,    26,    14,    28,
-      15,    30
+       0,     1,    11,    38,    13,    14,    15,    33,    16,    35,
+      17,    37,    18,    39,    19
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -690,47 +708,52 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      16,    20,    21,    17,    20,    21,    20,    21,     2,    24,
-      23,     3,    22,    25,    27,    29,     4,     3,     5,     6,
-       7,    18,     4,     8,     5,     6,     7,    34,    33,    36,
-      19,    40,    35,    41,    37,    42,    38,    31,    32,     0,
-       0,    39
+      12,     2,    45,    20,     3,    21,    26,    27,    46,     4,
+      40,     5,     6,     7,     8,     9,    22,    10,    28,     3,
+      32,    34,    36,    23,     4,    24,     5,     6,     7,     8,
+       9,    47,    49,    51,    53,    29,    30,    48,    50,    52,
+      52,    26,    27,    26,    27,    54,    31,    55,    25,    56,
+       0,    57,    41,    42,     0,     0,    43,    44
 };
 
 static const yytype_int8 yycheck[] =
 {
-       4,     4,     5,     8,     4,     5,     4,     5,     0,     9,
-       6,     3,    15,    17,    18,    19,     8,     3,    10,    11,
-      12,     8,     8,    15,    10,    11,    12,     9,    23,     9,
-       8,    35,    14,    37,    14,    39,     9,    20,    21,    -1,
-      -1,    14
+       1,     0,     9,     4,     3,     8,     4,     5,    15,     8,
+      25,    10,    11,    12,    13,    14,     8,    16,    16,     3,
+      21,    22,    23,     8,     8,     8,    10,    11,    12,    13,
+      14,     9,     9,     9,     9,     6,     7,    15,    15,    15,
+      15,     4,     5,     4,     5,    46,     9,    48,     8,    50,
+      -1,    52,    26,    27,    -1,    -1,    29,    30
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    17,     0,     3,     8,    10,    11,    12,    15,    18,
-      19,    20,    21,    22,    24,    26,    19,     8,     8,     8,
-       4,     5,    15,     6,     9,    19,    23,    19,    25,    19,
-      27,    20,    20,    21,     9,    14,     9,    14,     9,    14,
-      19,    19,    19
+       0,    18,     0,     3,     8,    10,    11,    12,    13,    14,
+      16,    19,    20,    21,    22,    23,    25,    27,    29,    31,
+      20,     8,     8,     8,     8,     8,     4,     5,    16,     6,
+       7,     9,    20,    24,    20,    26,    20,    28,    20,    30,
+      30,    21,    21,    22,    22,     9,    15,     9,    15,     9,
+      15,     9,    15,     9,    20,    20,    20,    20
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    16,    17,    17,    18,    18,    19,    19,    19,    20,
-      20,    21,    21,    21,    21,    21,    22,    23,    23,    24,
-      25,    25,    26,    27,    27
+       0,    17,    18,    18,    19,    19,    20,    20,    20,    21,
+      21,    21,    22,    22,    22,    22,    22,    22,    22,    23,
+      24,    24,    25,    26,    26,    27,    28,    28,    29,    30,
+      30,    31
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     0,     2,     2,     1,     3,     3,     1,     3,
-       1,     1,     3,     1,     1,     1,     4,     1,     3,     4,
-       1,     3,     4,     1,     3
+       3,     1,     1,     3,     1,     1,     1,     1,     1,     4,
+       1,     3,     4,     1,     3,     4,     1,     3,     4,     1,
+       3,     4
 };
 
 
@@ -1194,61 +1217,67 @@ yyreduce:
   switch (yyn)
     {
   case 4: /* line: expr EOL  */
-#line 47 "compil.y"
+#line 56 "compil.y"
                     { printf("= %f\n", (yyvsp[-1].val)); }
-#line 1200 "y.tab.c"
+#line 1223 "y.tab.c"
     break;
 
   case 6: /* expr: expr PLUS term  */
-#line 54 "compil.y"
+#line 63 "compil.y"
                          { (yyval.val) = (yyvsp[-2].val) + (yyvsp[0].val); }
-#line 1206 "y.tab.c"
+#line 1229 "y.tab.c"
     break;
 
   case 7: /* expr: expr MINUS term  */
-#line 55 "compil.y"
+#line 64 "compil.y"
                          { (yyval.val) = (yyvsp[-2].val) - (yyvsp[0].val); }
-#line 1212 "y.tab.c"
+#line 1235 "y.tab.c"
     break;
 
   case 9: /* term: term MUL factor  */
-#line 60 "compil.y"
+#line 69 "compil.y"
                          { (yyval.val) = (yyvsp[-2].val) * (yyvsp[0].val); }
-#line 1218 "y.tab.c"
+#line 1241 "y.tab.c"
     break;
 
-  case 11: /* factor: NUMBER  */
-#line 65 "compil.y"
-                               { (yyval.val) = (yyvsp[0].val); }
-#line 1224 "y.tab.c"
+  case 10: /* term: term DIV factor  */
+#line 70 "compil.y"
+                         { (yyval.val) = (yyvsp[-2].val) / (yyvsp[0].val); }
+#line 1247 "y.tab.c"
     break;
 
-  case 12: /* factor: LPAREN expr RPAREN  */
-#line 66 "compil.y"
-                               { (yyval.val) = (yyvsp[-1].val); }
-#line 1230 "y.tab.c"
-    break;
-
-  case 16: /* function_somme: SOMME LPAREN argument_list_sum RPAREN  */
+  case 12: /* factor: NUMBER  */
 #line 75 "compil.y"
-                                              { (yyval.val) = (yyvsp[-1].val); }
-#line 1236 "y.tab.c"
+                               { (yyval.val) = (yyvsp[0].val); }
+#line 1253 "y.tab.c"
     break;
 
-  case 17: /* argument_list_sum: expr  */
-#line 79 "compil.y"
-                                  { (yyval.val) = (yyvsp[0].val); }
-#line 1242 "y.tab.c"
+  case 13: /* factor: LPAREN expr RPAREN  */
+#line 76 "compil.y"
+                               { (yyval.val) = (yyvsp[-1].val); }
+#line 1259 "y.tab.c"
     break;
 
-  case 18: /* argument_list_sum: argument_list_sum COMMA expr  */
-#line 80 "compil.y"
-                                   { (yyval.val) = (yyvsp[-2].val) + (yyvsp[0].val); }
-#line 1248 "y.tab.c"
-    break;
-
-  case 19: /* function_moyenne: MOYENNE LPAREN argument_list_avg RPAREN  */
+  case 19: /* function_somme: SOMME LPAREN argument_list_sum RPAREN  */
 #line 87 "compil.y"
+                                              { (yyval.val) = (yyvsp[-1].val); }
+#line 1265 "y.tab.c"
+    break;
+
+  case 20: /* argument_list_sum: expr  */
+#line 91 "compil.y"
+                                  { (yyval.val) = (yyvsp[0].val); }
+#line 1271 "y.tab.c"
+    break;
+
+  case 21: /* argument_list_sum: argument_list_sum COMMA expr  */
+#line 92 "compil.y"
+                                   { (yyval.val) = (yyvsp[-2].val) + (yyvsp[0].val); }
+#line 1277 "y.tab.c"
+    break;
+
+  case 22: /* function_moyenne: MOYENNE LPAREN argument_list_avg RPAREN  */
+#line 99 "compil.y"
       {
           if ((yyvsp[-1].avg).count == 0) {
               yyerror("Division par zero dans moyenne()");
@@ -1257,47 +1286,96 @@ yyreduce:
               (yyval.val) = (yyvsp[-1].avg).sum / (yyvsp[-1].avg).count;
           }
       }
-#line 1261 "y.tab.c"
+#line 1290 "y.tab.c"
     break;
 
-  case 20: /* argument_list_avg: expr  */
-#line 100 "compil.y"
+  case 23: /* argument_list_avg: expr  */
+#line 112 "compil.y"
       {
           (yyval.avg).sum = (yyvsp[0].val);
           (yyval.avg).count = 1;
       }
-#line 1270 "y.tab.c"
+#line 1299 "y.tab.c"
     break;
 
-  case 21: /* argument_list_avg: argument_list_avg COMMA expr  */
-#line 105 "compil.y"
+  case 24: /* argument_list_avg: argument_list_avg COMMA expr  */
+#line 117 "compil.y"
       {
           (yyval.avg).sum = (yyvsp[-2].avg).sum + (yyvsp[0].val);
           (yyval.avg).count = (yyvsp[-2].avg).count + 1;
       }
-#line 1279 "y.tab.c"
+#line 1308 "y.tab.c"
     break;
 
-  case 22: /* function_produit: PRODUIT LPAREN argument_list_prod RPAREN  */
-#line 113 "compil.y"
+  case 25: /* function_produit: PRODUIT LPAREN argument_list_prod RPAREN  */
+#line 125 "compil.y"
                                                { (yyval.val) = (yyvsp[-1].val); }
-#line 1285 "y.tab.c"
+#line 1314 "y.tab.c"
     break;
 
-  case 23: /* argument_list_prod: expr  */
-#line 117 "compil.y"
+  case 26: /* argument_list_prod: expr  */
+#line 129 "compil.y"
                 { (yyval.val) = (yyvsp[0].val);}
-#line 1291 "y.tab.c"
+#line 1320 "y.tab.c"
     break;
 
-  case 24: /* argument_list_prod: argument_list_prod COMMA expr  */
-#line 118 "compil.y"
+  case 27: /* argument_list_prod: argument_list_prod COMMA expr  */
+#line 130 "compil.y"
                                      { (yyval.val) = (yyvsp[-2].val) * (yyvsp[0].val);}
-#line 1297 "y.tab.c"
+#line 1326 "y.tab.c"
+    break;
+
+  case 28: /* function_variance: VARIANCE LPAREN argument_list_var RPAREN  */
+#line 137 "compil.y"
+      {
+          if ((yyvsp[-1].var).count == 0){
+              yyerror("Pas d'arguments dans variance()");
+              (yyval.val) = 0;
+          }else {
+              double mean = (yyvsp[-1].var).sum / (yyvsp[-1].var).count;
+              (yyval.val) = ((yyvsp[-1].var).sum_of_squares / (yyvsp[-1].var).count) - (mean * mean);
+          }
+      }
+#line 1340 "y.tab.c"
+    break;
+
+  case 29: /* argument_list_var: expr  */
+#line 150 "compil.y"
+      {
+          (yyval.var).sum = (yyvsp[0].val);
+          (yyval.var).sum_of_squares = (yyvsp[0].val) * (yyvsp[0].val);
+          (yyval.var).count = 1;
+      }
+#line 1350 "y.tab.c"
+    break;
+
+  case 30: /* argument_list_var: argument_list_var COMMA expr  */
+#line 156 "compil.y"
+      {
+          (yyval.var).sum = (yyvsp[-2].var).sum + (yyvsp[0].val);
+          (yyval.var).sum_of_squares = (yyvsp[-2].var).sum_of_squares + ((yyvsp[0].val) * (yyvsp[0].val));
+          (yyval.var).count = (yyvsp[-2].var).count + 1;
+      }
+#line 1360 "y.tab.c"
+    break;
+
+  case 31: /* function_ecart_type: ECART_TYPE LPAREN argument_list_var RPAREN  */
+#line 168 "compil.y"
+      {
+          if ((yyvsp[-1].var).count == 0){
+              yyerror("Pas d'argument dans ecart_type");
+              (yyval.val) = 0;
+          } else {
+              double mean = (yyvsp[-1].var).sum / (yyvsp[-1].var).count;
+              double variance = ((yyvsp[-1].var).sum_of_squares / (yyvsp[-1].var).count) - (mean * mean);
+              (yyval.val) = sqrt(variance);
+          }
+      }
+#line 1375 "y.tab.c"
     break;
 
 
-#line 1301 "y.tab.c"
+#line 1379 "y.tab.c"
 
       default: break;
     }
@@ -1490,7 +1568,7 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 122 "compil.y"
+#line 180 "compil.y"
 
 
 

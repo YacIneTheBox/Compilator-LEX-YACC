@@ -8,6 +8,12 @@ typedef struct {
     int count;
 } AvgData;
 
+typedef struct {
+    double sum;
+    double sum_of_squares;
+    int count;
+}VarianceData;
+
 #include "y.tab.h"
 %}
 
@@ -26,6 +32,7 @@ typedef struct {
 "moyenne"               { return MOYENNE; }
 "produit"               { return PRODUIT; }
 "variance"              { return VARIANCE; }
+"ecart_type"            { return ECART_TYPE;}
 \n                      { return EOL; }
 .                       { printf("Caractere inconnu: %s\n", yytext); }
 

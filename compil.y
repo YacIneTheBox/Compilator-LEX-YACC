@@ -9,6 +9,12 @@ typedef struct {
     int count;
 } AvgData;
 
+typedef struct {
+    double sum;
+    double sum_of_squares;
+    int count;
+}VarianceData;
+
 int yylex();
 void yyerror(char *s);
 
@@ -18,6 +24,7 @@ void yyerror(char *s);
 %union {
     double val;       // pour expr, term, factor
     AvgData avg;   // pour moyenne
+    VarianceData var;
 }
 
 /* Déclaration des tokens */
@@ -25,14 +32,16 @@ void yyerror(char *s);
 %token PLUS MINUS MUL DIV
 %token LPAREN RPAREN
 %token SOMME MOYENNE
-%token PRODUIT VARIANCE
+%token PRODUIT VARIANCE ECART_TYPE
 %token COMMA
 %token EOL
 
 /* Déclaration des types des règles */
 %type <val> expr term factor function_somme function_moyenne function_produit
+function_variance function_ecart_type
 %type <avg> argument_list_avg
 %type <val> argument_list_sum  argument_list_prod
+%type <var> argument_list_var
 
 
 %%
@@ -58,6 +67,7 @@ expr:
 
 term:
       term MUL factor    { $$ = $1 * $3; }
+    | term DIV factor    { $$ = $1 / $3; }
     | factor
 ;
 
@@ -67,6 +77,8 @@ factor:
     | function_somme
     | function_moyenne
     | function_produit
+    | function_variance
+    | function_ecart_type
 ;
 
 /************   Fonction somme(...)   ************/
@@ -118,6 +130,52 @@ argument_list_prod:
     | argument_list_prod COMMA expr  { $$ = $1 * $3;}
 ;
 
+
+/************   Fonction variance(...)   ************/
+function_variance:
+      VARIANCE LPAREN argument_list_var RPAREN
+      {
+          if ($3.count == 0){
+              yyerror("Pas d'arguments dans variance()");
+              $$ = 0;
+          }else {
+              double mean = $3.sum / $3.count;
+              $$ = ($3.sum_of_squares / $3.count) - (mean * mean);
+          }
+      }
+;
+
+argument_list_var:
+      expr
+      {
+          $$.sum = $1;
+          $$.sum_of_squares = $1 * $1;
+          $$.count = 1;
+      }
+      | argument_list_var COMMA expr
+      {
+          $$.sum = $1.sum + $3;
+          $$.sum_of_squares = $1.sum_of_squares + ($3 * $3);
+          $$.count = $1.count + 1;
+      }
+;
+
+
+/************   Fonction ecart_type(...)   ************/
+
+function_ecart_type:
+      ECART_TYPE LPAREN argument_list_var RPAREN
+      {
+          if ($3.count == 0){
+              yyerror("Pas d'argument dans ecart_type");
+              $$ = 0;
+          } else {
+              double mean = $3.sum / $3.count;
+              double variance = ($3.sum_of_squares / $3.count) - (mean * mean);
+              $$ = sqrt(variance);
+          }
+      }
+;
 
 %%
 
