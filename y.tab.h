@@ -56,14 +56,17 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     NUMBER = 258,                  /* NUMBER  */
     PLUS = 259,                    /* PLUS  */
-    MUL = 260,                     /* MUL  */
-    MINUS = 261,                   /* MINUS  */
+    MINUS = 260,                   /* MINUS  */
+    MUL = 261,                     /* MUL  */
     DIV = 262,                     /* DIV  */
-    RPAREN = 263,                  /* RPAREN  */
-    LPAREN = 264,                  /* LPAREN  */
-    EOL = 265,                     /* EOL  */
-    SOMME = 266,                   /* SOMME  */
-    COMMA = 267                    /* COMMA  */
+    LPAREN = 263,                  /* LPAREN  */
+    RPAREN = 264,                  /* RPAREN  */
+    SOMME = 265,                   /* SOMME  */
+    MOYENNE = 266,                 /* MOYENNE  */
+    PRODUIT = 267,                 /* PRODUIT  */
+    VARIANCE = 268,                /* VARIANCE  */
+    COMMA = 269,                   /* COMMA  */
+    EOL = 270                      /* EOL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -74,18 +77,31 @@ extern int yydebug;
 #define YYUNDEF 257
 #define NUMBER 258
 #define PLUS 259
-#define MUL 260
-#define MINUS 261
+#define MINUS 260
+#define MUL 261
 #define DIV 262
-#define RPAREN 263
-#define LPAREN 264
-#define EOL 265
-#define SOMME 266
-#define COMMA 267
+#define LPAREN 263
+#define RPAREN 264
+#define SOMME 265
+#define MOYENNE 266
+#define PRODUIT 267
+#define VARIANCE 268
+#define COMMA 269
+#define EOL 270
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 18 "compil.y"
+
+    double val;       // pour expr, term, factor
+    AvgData avg;   // pour moyenne
+
+#line 102 "y.tab.h"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif

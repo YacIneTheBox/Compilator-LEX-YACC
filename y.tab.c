@@ -69,13 +69,21 @@
 /* First part of user prologue.  */
 #line 1 "compil.y"
 
+
 #include <stdio.h>
 #include <stdlib.h>
+#include <math.h>
+/* Structure pour gérer les arguments de moyenne */
+typedef struct {
+    double sum;
+    int count;
+} AvgData;
 
 int yylex();
 void yyerror(char *s);
 
-#line 79 "y.tab.c"
+
+#line 87 "y.tab.c"
 
 # ifndef YY_CAST
 #  ifdef __cplusplus
@@ -121,14 +129,17 @@ extern int yydebug;
     YYUNDEF = 257,                 /* "invalid token"  */
     NUMBER = 258,                  /* NUMBER  */
     PLUS = 259,                    /* PLUS  */
-    MUL = 260,                     /* MUL  */
-    MINUS = 261,                   /* MINUS  */
+    MINUS = 260,                   /* MINUS  */
+    MUL = 261,                     /* MUL  */
     DIV = 262,                     /* DIV  */
-    RPAREN = 263,                  /* RPAREN  */
-    LPAREN = 264,                  /* LPAREN  */
-    EOL = 265,                     /* EOL  */
-    SOMME = 266,                   /* SOMME  */
-    COMMA = 267                    /* COMMA  */
+    LPAREN = 263,                  /* LPAREN  */
+    RPAREN = 264,                  /* RPAREN  */
+    SOMME = 265,                   /* SOMME  */
+    MOYENNE = 266,                 /* MOYENNE  */
+    PRODUIT = 267,                 /* PRODUIT  */
+    VARIANCE = 268,                /* VARIANCE  */
+    COMMA = 269,                   /* COMMA  */
+    EOL = 270                      /* EOL  */
   };
   typedef enum yytokentype yytoken_kind_t;
 #endif
@@ -139,18 +150,31 @@ extern int yydebug;
 #define YYUNDEF 257
 #define NUMBER 258
 #define PLUS 259
-#define MUL 260
-#define MINUS 261
+#define MINUS 260
+#define MUL 261
 #define DIV 262
-#define RPAREN 263
-#define LPAREN 264
-#define EOL 265
-#define SOMME 266
-#define COMMA 267
+#define LPAREN 263
+#define RPAREN 264
+#define SOMME 265
+#define MOYENNE 266
+#define PRODUIT 267
+#define VARIANCE 268
+#define COMMA 269
+#define EOL 270
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-typedef int YYSTYPE;
+union YYSTYPE
+{
+#line 18 "compil.y"
+
+    double val;       // pour expr, term, factor
+    AvgData avg;   // pour moyenne
+
+#line 175 "y.tab.c"
+
+};
+typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
@@ -172,22 +196,29 @@ enum yysymbol_kind_t
   YYSYMBOL_YYUNDEF = 2,                    /* "invalid token"  */
   YYSYMBOL_NUMBER = 3,                     /* NUMBER  */
   YYSYMBOL_PLUS = 4,                       /* PLUS  */
-  YYSYMBOL_MUL = 5,                        /* MUL  */
-  YYSYMBOL_MINUS = 6,                      /* MINUS  */
+  YYSYMBOL_MINUS = 5,                      /* MINUS  */
+  YYSYMBOL_MUL = 6,                        /* MUL  */
   YYSYMBOL_DIV = 7,                        /* DIV  */
-  YYSYMBOL_RPAREN = 8,                     /* RPAREN  */
-  YYSYMBOL_LPAREN = 9,                     /* LPAREN  */
-  YYSYMBOL_EOL = 10,                       /* EOL  */
-  YYSYMBOL_SOMME = 11,                     /* SOMME  */
-  YYSYMBOL_COMMA = 12,                     /* COMMA  */
-  YYSYMBOL_YYACCEPT = 13,                  /* $accept  */
-  YYSYMBOL_input = 14,                     /* input  */
-  YYSYMBOL_line = 15,                      /* line  */
-  YYSYMBOL_expr = 16,                      /* expr  */
-  YYSYMBOL_term = 17,                      /* term  */
-  YYSYMBOL_factor = 18,                    /* factor  */
-  YYSYMBOL_function_call = 19,             /* function_call  */
-  YYSYMBOL_argument_list = 20              /* argument_list  */
+  YYSYMBOL_LPAREN = 8,                     /* LPAREN  */
+  YYSYMBOL_RPAREN = 9,                     /* RPAREN  */
+  YYSYMBOL_SOMME = 10,                     /* SOMME  */
+  YYSYMBOL_MOYENNE = 11,                   /* MOYENNE  */
+  YYSYMBOL_PRODUIT = 12,                   /* PRODUIT  */
+  YYSYMBOL_VARIANCE = 13,                  /* VARIANCE  */
+  YYSYMBOL_COMMA = 14,                     /* COMMA  */
+  YYSYMBOL_EOL = 15,                       /* EOL  */
+  YYSYMBOL_YYACCEPT = 16,                  /* $accept  */
+  YYSYMBOL_input = 17,                     /* input  */
+  YYSYMBOL_line = 18,                      /* line  */
+  YYSYMBOL_expr = 19,                      /* expr  */
+  YYSYMBOL_term = 20,                      /* term  */
+  YYSYMBOL_factor = 21,                    /* factor  */
+  YYSYMBOL_function_somme = 22,            /* function_somme  */
+  YYSYMBOL_argument_list_sum = 23,         /* argument_list_sum  */
+  YYSYMBOL_function_moyenne = 24,          /* function_moyenne  */
+  YYSYMBOL_argument_list_avg = 25,         /* argument_list_avg  */
+  YYSYMBOL_function_produit = 26,          /* function_produit  */
+  YYSYMBOL_argument_list_prod = 27         /* argument_list_prod  */
 };
 typedef enum yysymbol_kind_t yysymbol_kind_t;
 
@@ -515,19 +546,19 @@ union yyalloc
 /* YYFINAL -- State number of the termination state.  */
 #define YYFINAL  2
 /* YYLAST -- Last index in YYTABLE.  */
-#define YYLAST   30
+#define YYLAST   41
 
 /* YYNTOKENS -- Number of terminals.  */
-#define YYNTOKENS  13
+#define YYNTOKENS  16
 /* YYNNTS -- Number of nonterminals.  */
-#define YYNNTS  8
+#define YYNNTS  12
 /* YYNRULES -- Number of rules.  */
-#define YYNRULES  17
+#define YYNRULES  24
 /* YYNSTATES -- Number of states.  */
-#define YYNSTATES  29
+#define YYNSTATES  43
 
 /* YYMAXUTOK -- Last valid token kind.  */
-#define YYMAXUTOK   267
+#define YYMAXUTOK   270
 
 
 /* YYTRANSLATE(TOKEN-NUM) -- Symbol number corresponding to TOKEN-NUM
@@ -567,15 +598,17 @@ static const yytype_int8 yytranslate[] =
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     2,     2,     2,     2,
        2,     2,     2,     2,     2,     2,     1,     2,     3,     4,
-       5,     6,     7,     8,     9,    10,    11,    12
+       5,     6,     7,     8,     9,    10,    11,    12,    13,    14,
+      15
 };
 
 #if YYDEBUG
 /* YYRLINE[YYN] -- Source line where rule number YYN was defined.  */
 static const yytype_int8 yyrline[] =
 {
-       0,    17,    17,    19,    23,    24,    28,    29,    30,    33,
-      34,    35,    39,    40,    41,    45,    49,    50
+       0,    41,    41,    43,    47,    48,    54,    55,    56,    60,
+      61,    65,    66,    67,    68,    69,    75,    79,    80,    86,
+      99,   104,   113,   117,   118
 };
 #endif
 
@@ -592,9 +625,10 @@ static const char *yysymbol_name (yysymbol_kind_t yysymbol) YY_ATTRIBUTE_UNUSED;
 static const char *const yytname[] =
 {
   "\"end of file\"", "error", "\"invalid token\"", "NUMBER", "PLUS",
-  "MUL", "MINUS", "DIV", "RPAREN", "LPAREN", "EOL", "SOMME", "COMMA",
-  "$accept", "input", "line", "expr", "term", "factor", "function_call",
-  "argument_list", YY_NULLPTR
+  "MINUS", "MUL", "DIV", "LPAREN", "RPAREN", "SOMME", "MOYENNE", "PRODUIT",
+  "VARIANCE", "COMMA", "EOL", "$accept", "input", "line", "expr", "term",
+  "factor", "function_somme", "argument_list_sum", "function_moyenne",
+  "argument_list_avg", "function_produit", "argument_list_prod", YY_NULLPTR
 };
 
 static const char *
@@ -604,7 +638,7 @@ yysymbol_name (yysymbol_kind_t yysymbol)
 }
 #endif
 
-#define YYPACT_NINF (-7)
+#define YYPACT_NINF (-6)
 
 #define yypact_value_is_default(Yyn) \
   ((Yyn) == YYPACT_NINF)
@@ -618,9 +652,11 @@ yysymbol_name (yysymbol_kind_t yysymbol)
    STATE-NUM.  */
 static const yytype_int8 yypact[] =
 {
-      -7,     1,    -7,    -7,     4,    -7,    -1,    -7,    10,    -2,
-      -7,    -7,    13,     4,     4,     4,    -7,     4,     4,    -7,
-      18,    -6,    -2,    -2,    -7,    -7,    -7,     4,    18
+      -6,     8,    -6,    -6,    14,    -5,    13,    22,    -6,    -6,
+      -3,     4,    -6,    -6,    -6,    -6,     0,    14,    14,    14,
+      14,    14,    -6,    14,    -6,     2,    18,     2,    20,     2,
+      27,     4,     4,    -6,    -6,    14,    -6,    14,    -6,    14,
+       2,     2,     2
 };
 
 /* YYDEFACT[STATE-NUM] -- Default reduction number in state STATE-NUM.
@@ -628,21 +664,25 @@ static const yytype_int8 yypact[] =
    means the default is an error.  */
 static const yytype_int8 yydefact[] =
 {
-       2,     0,     1,    12,     0,     5,     0,     3,     0,     8,
-      11,    14,     0,     0,     0,     0,     4,     0,     0,    13,
-      16,     0,     6,     7,     9,    10,    15,     0,    17
+       2,     0,     1,    11,     0,     0,     0,     0,     5,     3,
+       0,     8,    10,    13,    14,    15,     0,     0,     0,     0,
+       0,     0,     4,     0,    12,    17,     0,    20,     0,    23,
+       0,     6,     7,     9,    16,     0,    19,     0,    22,     0,
+      18,    21,    24
 };
 
 /* YYPGOTO[NTERM-NUM].  */
 static const yytype_int8 yypgoto[] =
 {
-      -7,    -7,    -7,    -4,    11,    12,    -7,    -7
+      -6,    -6,    -6,    -4,    17,     5,    -6,    -6,    -6,    -6,
+      -6,    -6
 };
 
 /* YYDEFGOTO[NTERM-NUM].  */
 static const yytype_int8 yydefgoto[] =
 {
-       0,     1,     7,     8,     9,    10,    11,    21
+       0,     1,     9,    10,    11,    12,    13,    26,    14,    28,
+      15,    30
 };
 
 /* YYTABLE[YYPACT[STATE-NUM]] -- What to do in state STATE-NUM.  If
@@ -650,41 +690,47 @@ static const yytype_int8 yydefgoto[] =
    number is the opposite.  If YYTABLE_NINF, syntax error.  */
 static const yytype_int8 yytable[] =
 {
-      12,     2,    26,    17,     3,    18,    27,     3,    13,    20,
-       4,     5,     6,     4,    14,     6,    15,    14,     0,    15,
-      16,    19,    14,    28,    15,    22,    23,     0,     0,    24,
-      25
+      16,    20,    21,    17,    20,    21,    20,    21,     2,    24,
+      23,     3,    22,    25,    27,    29,     4,     3,     5,     6,
+       7,    18,     4,     8,     5,     6,     7,    34,    33,    36,
+      19,    40,    35,    41,    37,    42,    38,    31,    32,     0,
+       0,    39
 };
 
 static const yytype_int8 yycheck[] =
 {
-       4,     0,     8,     5,     3,     7,    12,     3,     9,    13,
-       9,    10,    11,     9,     4,    11,     6,     4,    -1,     6,
-      10,     8,     4,    27,     6,    14,    15,    -1,    -1,    17,
-      18
+       4,     4,     5,     8,     4,     5,     4,     5,     0,     9,
+       6,     3,    15,    17,    18,    19,     8,     3,    10,    11,
+      12,     8,     8,    15,    10,    11,    12,     9,    23,     9,
+       8,    35,    14,    37,    14,    39,     9,    20,    21,    -1,
+      -1,    14
 };
 
 /* YYSTOS[STATE-NUM] -- The symbol kind of the accessing symbol of
    state STATE-NUM.  */
 static const yytype_int8 yystos[] =
 {
-       0,    14,     0,     3,     9,    10,    11,    15,    16,    17,
-      18,    19,    16,     9,     4,     6,    10,     5,     7,     8,
-      16,    20,    17,    17,    18,    18,     8,    12,    16
+       0,    17,     0,     3,     8,    10,    11,    12,    15,    18,
+      19,    20,    21,    22,    24,    26,    19,     8,     8,     8,
+       4,     5,    15,     6,     9,    19,    23,    19,    25,    19,
+      27,    20,    20,    21,     9,    14,     9,    14,     9,    14,
+      19,    19,    19
 };
 
 /* YYR1[RULE-NUM] -- Symbol kind of the left-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr1[] =
 {
-       0,    13,    14,    14,    15,    15,    16,    16,    16,    17,
-      17,    17,    18,    18,    18,    19,    20,    20
+       0,    16,    17,    17,    18,    18,    19,    19,    19,    20,
+      20,    21,    21,    21,    21,    21,    22,    23,    23,    24,
+      25,    25,    26,    27,    27
 };
 
 /* YYR2[RULE-NUM] -- Number of symbols on the right-hand side of rule RULE-NUM.  */
 static const yytype_int8 yyr2[] =
 {
        0,     2,     0,     2,     2,     1,     3,     3,     1,     3,
-       3,     1,     1,     3,     1,     4,     1,     3
+       1,     1,     3,     1,     1,     1,     4,     1,     3,     4,
+       1,     3,     4,     1,     3
 };
 
 
@@ -1148,61 +1194,110 @@ yyreduce:
   switch (yyn)
     {
   case 4: /* line: expr EOL  */
-#line 23 "compil.y"
-                { printf("= %d\n", yyvsp[-1]); }
-#line 1154 "y.tab.c"
+#line 47 "compil.y"
+                    { printf("= %f\n", (yyvsp[-1].val)); }
+#line 1200 "y.tab.c"
     break;
 
   case 6: /* expr: expr PLUS term  */
-#line 28 "compil.y"
-                      { yyval = yyvsp[-2] + yyvsp[0]; }
-#line 1160 "y.tab.c"
+#line 54 "compil.y"
+                         { (yyval.val) = (yyvsp[-2].val) + (yyvsp[0].val); }
+#line 1206 "y.tab.c"
     break;
 
   case 7: /* expr: expr MINUS term  */
-#line 29 "compil.y"
-                       { yyval = yyvsp[-2] - yyvsp[0]; }
-#line 1166 "y.tab.c"
+#line 55 "compil.y"
+                         { (yyval.val) = (yyvsp[-2].val) - (yyvsp[0].val); }
+#line 1212 "y.tab.c"
     break;
 
   case 9: /* term: term MUL factor  */
-#line 33 "compil.y"
-                       { yyval = yyvsp[-2] * yyvsp[0]; }
-#line 1172 "y.tab.c"
+#line 60 "compil.y"
+                         { (yyval.val) = (yyvsp[-2].val) * (yyvsp[0].val); }
+#line 1218 "y.tab.c"
     break;
 
-  case 10: /* term: term DIV factor  */
-#line 34 "compil.y"
-                        { yyval = yyvsp[-2] / yyvsp[0]; }
-#line 1178 "y.tab.c"
+  case 11: /* factor: NUMBER  */
+#line 65 "compil.y"
+                               { (yyval.val) = (yyvsp[0].val); }
+#line 1224 "y.tab.c"
     break;
 
-  case 13: /* factor: LPAREN expr RPAREN  */
-#line 40 "compil.y"
-                           { yyval = yyvsp[-1];}
-#line 1184 "y.tab.c"
+  case 12: /* factor: LPAREN expr RPAREN  */
+#line 66 "compil.y"
+                               { (yyval.val) = (yyvsp[-1].val); }
+#line 1230 "y.tab.c"
     break;
 
-  case 15: /* function_call: SOMME LPAREN argument_list RPAREN  */
-#line 45 "compil.y"
-                                      { yyval = yyvsp[-1]; }
-#line 1190 "y.tab.c"
+  case 16: /* function_somme: SOMME LPAREN argument_list_sum RPAREN  */
+#line 75 "compil.y"
+                                              { (yyval.val) = (yyvsp[-1].val); }
+#line 1236 "y.tab.c"
     break;
 
-  case 16: /* argument_list: expr  */
-#line 49 "compil.y"
-          { yyval = yyvsp[0]; }
-#line 1196 "y.tab.c"
+  case 17: /* argument_list_sum: expr  */
+#line 79 "compil.y"
+                                  { (yyval.val) = (yyvsp[0].val); }
+#line 1242 "y.tab.c"
     break;
 
-  case 17: /* argument_list: argument_list COMMA expr  */
-#line 50 "compil.y"
-                               { yyval = yyvsp[-2] + yyvsp[0]; }
-#line 1202 "y.tab.c"
+  case 18: /* argument_list_sum: argument_list_sum COMMA expr  */
+#line 80 "compil.y"
+                                   { (yyval.val) = (yyvsp[-2].val) + (yyvsp[0].val); }
+#line 1248 "y.tab.c"
+    break;
+
+  case 19: /* function_moyenne: MOYENNE LPAREN argument_list_avg RPAREN  */
+#line 87 "compil.y"
+      {
+          if ((yyvsp[-1].avg).count == 0) {
+              yyerror("Division par zero dans moyenne()");
+              (yyval.val) = 0;
+          } else {
+              (yyval.val) = (yyvsp[-1].avg).sum / (yyvsp[-1].avg).count;
+          }
+      }
+#line 1261 "y.tab.c"
+    break;
+
+  case 20: /* argument_list_avg: expr  */
+#line 100 "compil.y"
+      {
+          (yyval.avg).sum = (yyvsp[0].val);
+          (yyval.avg).count = 1;
+      }
+#line 1270 "y.tab.c"
+    break;
+
+  case 21: /* argument_list_avg: argument_list_avg COMMA expr  */
+#line 105 "compil.y"
+      {
+          (yyval.avg).sum = (yyvsp[-2].avg).sum + (yyvsp[0].val);
+          (yyval.avg).count = (yyvsp[-2].avg).count + 1;
+      }
+#line 1279 "y.tab.c"
+    break;
+
+  case 22: /* function_produit: PRODUIT LPAREN argument_list_prod RPAREN  */
+#line 113 "compil.y"
+                                               { (yyval.val) = (yyvsp[-1].val); }
+#line 1285 "y.tab.c"
+    break;
+
+  case 23: /* argument_list_prod: expr  */
+#line 117 "compil.y"
+                { (yyval.val) = (yyvsp[0].val);}
+#line 1291 "y.tab.c"
+    break;
+
+  case 24: /* argument_list_prod: argument_list_prod COMMA expr  */
+#line 118 "compil.y"
+                                     { (yyval.val) = (yyvsp[-2].val) * (yyvsp[0].val);}
+#line 1297 "y.tab.c"
     break;
 
 
-#line 1206 "y.tab.c"
+#line 1301 "y.tab.c"
 
       default: break;
     }
@@ -1395,15 +1490,18 @@ yyreturnlab:
   return yyresult;
 }
 
-#line 53 "compil.y"
+#line 122 "compil.y"
 
 
+
+
+/************   Gestion des erreurs   ************/
 void yyerror(char *s) {
-    printf("Erreur: %s\n", s);
+    printf("Erreur syntaxique: %s\n", s);
 }
 
 int main() {
-    printf("Tapez une expression:\n");
+    printf("Entrez une expression:\n");
     yyparse();
     return 0;
 }
